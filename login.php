@@ -1,3 +1,6 @@
+<?php 
+session_start();
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,6 +57,9 @@
         <!-- /.col -->
         <div class="col-xs-4">
           <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+          <?php if(isset($_SESSION['registeredSuccessfully'])) { ?>
+            <span id="registeredSuccessfully" class="color-green">You Have Registered Successfully!</span>
+          <?php unset($_SESSION['registeredSuccessfully']); } ?>
         </div>
         <!-- /.col -->
       </div>
@@ -81,6 +87,12 @@
       radioClass: 'iradio_square-blue',
       increaseArea: '20%' // optional
     });
+  });
+</script>
+<!-- Custom -->
+<script>
+  $(function() {
+    $("#registeredSuccessfully:visible").fadeOut(5000);
   });
 </script>
 </body>

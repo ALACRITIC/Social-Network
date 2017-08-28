@@ -4,8 +4,13 @@ Create social network website like facebook using php
 
 # View Tutorials
 
+Social Network Using PHP - Part-1 - Introduction - https://youtu.be/wCVKChmDwvI
+
+Social Network Using PHP - Part-2 - Registration & Validations - https://youtu.be/itS5i6xSKHE
 
 # Theme
+
+Download Theme (Without PHP Code) From - http://learningfromscratch.online/download/social-network-theme/
 
 This theme is modified version of Free AdminLTE Theme (https://adminlte.io/). All front-end used in this theme is taken from AdminLTE. Check them out they have awesome themes!
 
