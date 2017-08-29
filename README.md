@@ -8,6 +8,8 @@ Social Network Using PHP - Part-1 - Introduction - https://youtu.be/wCVKChmDwvI
 
 Social Network Using PHP - Part-2 - Registration & Validations - https://youtu.be/itS5i6xSKHE
 
+Social Network Using PHP - Part-3 - Login & Validations - https://youtu.be/dm150il6FB0
+
 # Theme
 
 Download Theme (Without PHP Code) From - http://learningfromscratch.online/download/social-network-theme/

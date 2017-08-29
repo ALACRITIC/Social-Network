@@ -17,6 +17,8 @@ session_start();
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
   <!-- iCheck -->
   <link rel="stylesheet" href="plugins/iCheck/square/blue.css">
+  <!-- Custom -->
+  <link rel="stylesheet" href="dist/css/custom.css">
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -37,13 +39,13 @@ session_start();
   <div class="login-box-body">
     <p class="login-box-msg">Sign In</p>
 
-    <form action="index2.html" method="post">
+    <form id="loginForm" method="post">
       <div class="form-group has-feedback">
-        <input type="email" class="form-control" placeholder="Email">
+        <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" class="form-control" placeholder="Password">
+        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="row">
@@ -56,12 +58,21 @@ session_start();
         </div>
         <!-- /.col -->
         <div class="col-xs-4">
-          <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+          <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>          
+        </div>
+        <!-- /.col -->
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+            <span id="loginError" class="color-red hide-me">Invalid Email/Password!</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
           <?php if(isset($_SESSION['registeredSuccessfully'])) { ?>
             <span id="registeredSuccessfully" class="color-green">You Have Registered Successfully!</span>
           <?php unset($_SESSION['registeredSuccessfully']); } ?>
         </div>
-        <!-- /.col -->
       </div>
     </form>
     <!-- /.social-auth-links -->
@@ -92,7 +103,20 @@ session_start();
 <!-- Custom -->
 <script>
   $(function() {
-    $("#registeredSuccessfully:visible").fadeOut(5000);
+    $("#registeredSuccessfully:visible").fadeOut(8000);
+  });
+</script>
+<script>
+  $("#loginForm").on("submit", function(e) {
+    e.preventDefault();
+    $.post("checklogin.php", $(this).serialize() ).done(function(data) {
+        var result = $.trim(data);
+        if(result == "ok") {
+          window.location.href = "index.php";
+        } else {
+          $("#loginError").show();
+        }
+      });
   });
 </script>
 </body>

@@ -114,23 +114,7 @@
     } else {
       $("#nameError").hide();
     }
-
-    if(emailReg.test($("#email").val())) {
-      $("#emailError").hide();
-      $.post("checkemail.php", { email: $("#email").val()}).done(function(data) {
-        var result = $.trim(data);
-        if(result == "Error") {
-          $("#emailExistsError").text("This email is already registered with us. Choose Different Email.");
-          $("#emailExistsError").show();
-        } else {
-          $("#emailExistsError").hide();
-        } 
-      });
-    } else {
-        $("#emailError").text("Email should be of format example@example.com");
-        $("#emailError").show();
-        errors = true;
-    }
+ 
 
     if(passwordReg.test($("#password").val())) {
       $("#passwordError").hide();
@@ -148,17 +132,38 @@
         errors = true;
     }
 
-    if(errors == false) {
-      $.post("adduser.php", $("#registerForm").serialize() ).done(function(data) {
+    if(emailReg.test($("#email").val())) {
+      $("#emailError").hide();
+      $.post("checkemail.php", { email: $("#email").val()}).done(function(data) {
+        var result = $.trim(data);
+        if(result == "Error") {
+          $("#emailExistsError").text("This email is already registered with us. Choose Different Email.");
+          $("#emailExistsError").show();
+          errors = true;
+        } else {
+          $("#emailExistsError").hide();
+          adduser();
+        } 
+      });
+    } else {
+        $("#emailError").text("Email should be of format example@example.com");
+        $("#emailError").show();
+        errors = true;
+    }
+
+
+
+  });
+</script>
+<script>
+  function adduser() {
+     $.post("adduser.php", $("#registerForm").serialize() ).done(function(data) {
         var result = $.trim(data);
         if(result == "ok") {
           window.location.href = "login.php";
         }
       });
-    }
-
-
-  });
+  }
 </script>
 </body>
 </html>
