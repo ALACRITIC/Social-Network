@@ -10,7 +10,7 @@ Social Network Using PHP - Part-2 - Registration & Validations - https://youtu.b
 
 Social Network Using PHP - Part-3 - Login & Validations - https://youtu.be/dm150il6FB0
 
-Social Network Using PHP - Part-5 - User Profile - https://youtu.be/d7tqV8cg0Qs
+Social Network Using PHP - Part-4 - User Profile - https://youtu.be/d7tqV8cg0Qs
 
 # Theme
 
