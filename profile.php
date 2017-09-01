@@ -1,3 +1,34 @@
+<?php
+
+session_start();
+
+if(empty($_SESSION['id_user'])) {
+  header("Location: login.php");
+  exit();
+}
+require_once("db.php");
+
+$name = $designation = $email = $degree = $university = $city = $country = $skills = $aboutme = "";
+
+$sql = "SELECT * FROM users WHERE id_user='$_SESSION[id_user]'";
+$result = $conn->query($sql);
+
+if($result->num_rows > 0) { 
+  while($row = $result->fetch_assoc()) {
+    $name = $row['name'];
+    $designation = $row['designation'];
+    $email = $row['email'];
+    $degree = $row['degree'];
+    $university = $row['university'];
+    $city = $row['city'];
+    $country = $row['country'];
+    $skills= $row['skills'];
+    $aboutme = $row['aboutme'];
+  }
+}
+
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -177,7 +208,7 @@
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-              <span class="hidden-xs">Alexander Pierce</span>
+              <span class="hidden-xs"><?php echo $name; ?></span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
@@ -185,7 +216,7 @@
                 <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
 
                 <p>
-                  Alexander Pierce - Web Developer
+                  <?php echo $name; ?> - <?php echo $designation; ?>
                   <small>Member since Nov. 2012</small>
                 </p>
               </li>
@@ -215,7 +246,7 @@
           <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
-          <p>Alexander Pierce</p>
+          <p><?php echo $name; ?></p>
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
@@ -282,9 +313,9 @@
             <div class="box-body box-profile">
               <img class="profile-user-img img-responsive img-circle" src="dist/img/user4-128x128.jpg" alt="User profile picture">
 
-              <h3 class="profile-username text-center">Nina Mcintire</h3>
+              <h3 class="profile-username text-center"><?php echo $name; ?></h3>
 
-              <p class="text-muted text-center">Software Engineer</p>
+              <p class="text-muted text-center"><?php echo $designation; ?></p>
 
               <ul class="list-group list-group-unbordered">
                 <li class="list-group-item">
@@ -312,34 +343,45 @@
             <!-- /.box-header -->
             <div class="box-body">
               <strong><i class="fa fa-book margin-r-5"></i> Education</strong>
-
+              
+              <?php if($degree != "" && $university != "") { ?>
               <p class="text-muted">
-                B.S. in Computer Science from the University of Tennessee at Knoxville
+                <?php echo $degree; ?> from <?php echo $university; ?>
               </p>
+              <?php  } ?>
 
               <hr>
 
               <strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
 
-              <p class="text-muted">Malibu, California</p>
+              <p class="text-muted"><?php echo $city; ?>, <?php echo $country; ?></p>
 
               <hr>
 
               <strong><i class="fa fa-pencil margin-r-5"></i> Skills</strong>
-
+              
               <p>
-                <span class="label label-danger">UI Design</span>
-                <span class="label label-success">Coding</span>
-                <span class="label label-info">Javascript</span>
-                <span class="label label-warning">PHP</span>
-                <span class="label label-primary">Node.js</span>
+              <?php 
+
+              $arr = explode(" ", $skills);
+
+              $colors = array("label-danger", "label-success", "label-info", "label label-warning", "label-primary");
+
+              foreach ($arr as $key => $value) {
+                $c = array_rand($colors);
+                $v = $colors[$c];
+                ?>
+                <span class="label <?php echo $v; ?>"><?php echo $value; ?></span>
+                <?php
+              } 
+              ?>
               </p>
 
               <hr>
 
-              <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
+              <strong><i class="fa fa-file-text-o margin-r-5"></i> About Me</strong>
 
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p>
+              <p><?php echo $aboutme; ?></p>
             </div>
             <!-- /.box-body -->
           </div>
@@ -563,49 +605,69 @@
               <!-- /.tab-pane -->
 
               <div class="tab-pane" id="settings">
-                <form class="form-horizontal">
+                <form class="form-horizontal" method="post" action="updateprofile.php">
+                
                   <div class="form-group">
                     <label for="inputName" class="col-sm-2 control-label">Name</label>
 
                     <div class="col-sm-10">
-                      <input type="email" class="form-control" id="inputName" placeholder="Name">
+                      <input type="text" class="form-control" name="name" id="inputName" placeholder="Name" value="<?php echo $name; ?>" required>
                     </div>
                   </div>
                   <div class="form-group">
                     <label for="inputEmail" class="col-sm-2 control-label">Email</label>
 
                     <div class="col-sm-10">
-                      <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                      <input type="email" class="form-control" id="inputEmail" placeholder="Email" value="<?php echo $email; ?>" disabled>
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="inputName" class="col-sm-2 control-label">Name</label>
+                    <label for="inputDesignation" class="col-sm-2 control-label">Designation</label>
 
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="inputName" placeholder="Name">
+                      <input type="text" class="form-control" name="designation" id="inputDesignation" placeholder="Designation" value="<?php echo $designation; ?>">
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="inputExperience" class="col-sm-2 control-label">Experience</label>
+                    <label for="inputDegree" class="col-sm-2 control-label">Degree</label>
 
                     <div class="col-sm-10">
-                      <textarea class="form-control" id="inputExperience" placeholder="Experience"></textarea>
+                      <input type="text" class="form-control" name="degree" id="inputDegree" placeholder="Degree" value="<?php echo $degree; ?>">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputUniversity" class="col-sm-2 control-label">University</label>
+
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="university" id="inputUniversity" placeholder="University" value="<?php echo $university; ?>">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputCity" class="col-sm-2 control-label">City</label>
+
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="city" id="inputCity" placeholder="City" value="<?php echo $city; ?>">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputCountry" class="col-sm-2 control-label">Country</label>
+
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="country" id="inputCountry" placeholder="Country" value="<?php echo $country; ?>">
                     </div>
                   </div>
                   <div class="form-group">
                     <label for="inputSkills" class="col-sm-2 control-label">Skills</label>
 
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="inputSkills" placeholder="Skills">
+                      <textarea class="form-control" id="inputSkills" name="skills" placeholder="Skills (Space Separated)"><?php echo $skills; ?></textarea>
                     </div>
                   </div>
                   <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                      <div class="checkbox">
-                        <label>
-                          <input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
-                        </label>
-                      </div>
+                    <label for="inputAboutMe" class="col-sm-2 control-label">About Me</label>
+
+                    <div class="col-sm-10">
+                      <textarea class="form-control" id="inputAboutMe" name="aboutme" placeholder="About Me"><?php echo $aboutme; ?></textarea>
                     </div>
                   </div>
                   <div class="form-group">
