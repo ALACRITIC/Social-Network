@@ -148,7 +148,18 @@ if($result->num_rows > 0) {
                   <li>
                     <a href="#">
                       <div class="pull-left">
-                        <img src="dist/img/user4-128x128.jpg" class="img-circle" alt="User Image">
+                        <?php 
+                        $sql = "SELECT * FROM users WHERE id_user='$_SESSION[id_user]'";
+                        $result = $conn->query($sql);
+                        if($result->num_rows > 0) {
+                          $row = $result->fetch_assoc();
+                          if($row['profileimage'] != '') {
+                            echo '<img src="uploads/profile/'.$row['profileimage'].'" class="img-circle" alt="User Image">';
+                          } else {
+                            echo '<img src="dist/img/avatar5.png" class="img-circle" alt="User Image">';
+                          }
+                        }
+                        ?>
                       </div>
                       <h4>
                         Reviewers
@@ -207,13 +218,37 @@ if($result->num_rows > 0) {
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+              <?php 
+                $sql = "SELECT * FROM users WHERE id_user='$_SESSION[id_user]'";
+                $result = $conn->query($sql);
+                if($result->num_rows > 0) {
+                  $row = $result->fetch_assoc();
+                  if($row['profileimage'] != '') {
+                    echo '<img src="uploads/profile/'.$row['profileimage'].'" class="img-circle" alt="User Image" style="width: 25px; height: 25px;">';
+                  } else {
+                     echo '<img src="dist/img/avatar5.png" class="img-circle" alt="User Image" style="width: 25px; height: 25px;">';
+                  }
+                }
+                ?>
               <span class="hidden-xs"><?php echo $name; ?></span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
-                <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+
+              <?php 
+                $sql = "SELECT * FROM users WHERE id_user='$_SESSION[id_user]'";
+                $result = $conn->query($sql);
+                if($result->num_rows > 0) {
+                  $row = $result->fetch_assoc();
+                  if($row['profileimage'] != '') {
+                    echo '<img src="uploads/profile/'.$row['profileimage'].'" class="img-circle" alt="User Image">';
+                  } else {
+                    echo '<img src="dist/img/avatar5.png" class="img-circle" alt="User Image">';
+                  }
+                }
+                ?>
+             
 
                 <p>
                   <?php echo $name; ?> - <?php echo $designation; ?>
@@ -243,7 +278,18 @@ if($result->num_rows > 0) {
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+          <?php 
+                $sql = "SELECT * FROM users WHERE id_user='$_SESSION[id_user]'";
+                $result = $conn->query($sql);
+                if($result->num_rows > 0) {
+                  $row = $result->fetch_assoc();
+                  if($row['profileimage'] != '') {
+                    echo '<img src="uploads/profile/'.$row['profileimage'].'" class="img-circle" alt="User Image">';
+                  } else {
+                    echo '<img src="dist/img/avatar5.png" class="img-circle" alt="User Image">';
+                  }
+                }
+                ?>
         </div>
         <div class="pull-left info">
           <p><?php echo $name; ?></p>
@@ -311,7 +357,18 @@ if($result->num_rows > 0) {
           <!-- Profile Image -->
           <div class="box box-primary">
             <div class="box-body box-profile">
-              <img class="profile-user-img img-responsive img-circle" src="dist/img/user4-128x128.jpg" alt="User profile picture">
+            <?php 
+                $sql = "SELECT * FROM users WHERE id_user='$_SESSION[id_user]'";
+                $result = $conn->query($sql);
+                if($result->num_rows > 0) {
+                  $row = $result->fetch_assoc();
+                  if($row['profileimage'] != '') {
+                    echo '<img src="uploads/profile/'.$row['profileimage'].'" class="profile-user-img img-responsive img-circle" alt="User Image">';
+                  } else {
+                     echo '<img src="dist/img/avatar5.png" class="profile-user-img img-responsive img-circle" alt="User Image">';
+                  }
+                }
+                ?>
 
               <h3 class="profile-username text-center"><?php echo $name; ?></h3>
 
@@ -397,66 +454,74 @@ if($result->num_rows > 0) {
             </ul>
             <div class="tab-content">
               <div class="active tab-pane" id="activity">
-                <!-- Post -->
-                <div class="post">
-                  <div class="user-block">
-                    <img class="img-circle img-bordered-sm" src="dist/img/user1-128x128.jpg" alt="user image">
-                        <span class="username">
-                          <a href="#">Jonathan Burke Jr.</a>
-                        </span>
-                    <span class="description">Shared publicly - 7:30 PM today</span>
+                <div class="box box-info">
+                  <div class="box-header with-border">
+                    <h3 class="box-title">Wall</h3>
                   </div>
-                  <!-- /.user-block -->
-                  <p>
-                    Lorem ipsum represents a long-held tradition for designers,
-                    typographers and the like. Some people hate it and argue for
-                    its demise, but others ignore the hate as they create awesome
-                    tools to help create filler text for everyone from bacon lovers
-                    to Charlie Sheen fans.
-                  </p>
-                  <ul class="list-inline">
-                    <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
-                    <li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a>
-                    </li>
-                    <li class="pull-right">
-                      <a href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comments
-                        (5)</a></li>
-                  </ul>
-
-                  <input class="form-control input-sm" type="text" placeholder="Type a comment">
-                </div>
-                <!-- /.post -->
-
-                <!-- Post -->
-                <div class="post clearfix">
-                  <div class="user-block">
-                    <img class="img-circle img-bordered-sm" src="dist/img/user7-128x128.jpg" alt="User Image">
-                        <span class="username">
-                          <a href="#">Sarah Ross</a>
-                        </span>
-                    <span class="description">Sent you a message - 3 days ago</span>
-                  </div>
-                  <!-- /.user-block -->
-                  <p>
-                    Lorem ipsum represents a long-held tradition for designers,
-                    typographers and the like. Some people hate it and argue for
-                    its demise, but others ignore the hate as they create awesome
-                    tools to help create filler text for everyone from bacon lovers
-                    to Charlie Sheen fans.
-                  </p>
-
-                  <form class="form-horizontal">
-                    <div class="form-group margin-bottom-none">
-                      <div class="col-sm-9">
-                        <input class="form-control input-sm" placeholder="Response">
-                      </div>
-                      <div class="col-sm-3">
-                        <button type="submit" class="btn btn-danger pull-right btn-block btn-sm">Send</button>
+                  <!-- /.box-header -->
+                  <!-- form start -->
+                  <form class="form-horizontal" action="addpost.php" method="post">
+                    <div class="box-body">
+                      <div class="form-group">
+                        <div class="col-sm-12">
+                         <textarea class="form-control" name="description" placeholder="What's on your mind?" name="message"></textarea>
+                        </div>
                       </div>
                     </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                      <button type="submit" class="btn btn-info">Post</button>
+                      <button class="btn btn-warning pull-right margin-r-5">Image</button>
+                      <button class="btn btn-warning pull-right margin-r-5">Video</button>
+                    </div>
+                    <!-- /.box-footer -->
                   </form>
                 </div>
-                <!-- /.post -->
+                
+                <?php
+
+                $sql = "SELECT * FROM post INNER JOIN users WHERE post.id_user=users.id_user AND post.id_user='$_SESSION[id_user]' ORDER BY post.id_post DESC";
+                $result = $conn->query($sql);
+
+                if($result->num_rows > 0) {
+                  while($row =  $result->fetch_assoc()) {
+                    ?>
+                      <!-- Post -->
+                      <div class="post">
+                        <div class="user-block">
+                        <?php
+                          if($row['profileimage'] != '') {
+                            echo '<img src="uploads/profile/'.$row['profileimage'].'" class="img-circle img-bordered-sm" alt="User Image">';
+                          } else {
+                             echo '<img src="dist/img/avatar5.png" class="img-circle img-bordered-sm" alt="User Image">';
+                          }
+                        ?>
+                              <span class="username">
+                                <a href="#"><?php echo $row['name']; ?></a>
+                              </span>
+                          <span class="description">Shared publicly - <?php echo date('d-M-Y h:i a', strtotime($row['createdAt'])); ?></span>
+                        </div>
+                        <!-- /.user-block -->
+                        <p>
+                          <?php echo $row['description']; ?>
+                        </p>
+                        <ul class="list-inline">
+                          <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
+                          <li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a>
+                          </li>
+                          <li class="pull-right">
+                            <a href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comments
+                              (5)</a></li>
+                        </ul>
+
+                        <input class="form-control input-sm" type="text" placeholder="Type a comment">
+                      </div>
+                      <!-- /.post -->
+                    <?php
+                  }
+                }
+                ?>
+                
 
                 <!-- Post -->
                 <div class="post">
@@ -605,7 +670,7 @@ if($result->num_rows > 0) {
               <!-- /.tab-pane -->
 
               <div class="tab-pane" id="settings">
-                <form class="form-horizontal" method="post" action="updateprofile.php">
+                <form class="form-horizontal" method="post" action="updateprofile.php" enctype="multipart/form-data">
                 
                   <div class="form-group">
                     <label for="inputName" class="col-sm-2 control-label">Name</label>
@@ -668,6 +733,13 @@ if($result->num_rows > 0) {
 
                     <div class="col-sm-10">
                       <textarea class="form-control" id="inputAboutMe" name="aboutme" placeholder="About Me"><?php echo $aboutme; ?></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="inputProfileImage" class="col-sm-2 control-label">Upload Profile Image</label>
+
+                    <div class="col-sm-10">
+                      <input type="file" id="inputProfileImage" name="image" class="form-control" required>
                     </div>
                   </div>
                   <div class="form-group">
