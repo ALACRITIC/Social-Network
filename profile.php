@@ -51,6 +51,7 @@ if($result->num_rows > 0) {
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
 
+  <link rel="stylesheet" href="dist/css/custom.css">
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -460,7 +461,7 @@ if($result->num_rows > 0) {
                   </div>
                   <!-- /.box-header -->
                   <!-- form start -->
-                  <form class="form-horizontal" action="addpost.php" method="post">
+                  <form class="form-horizontal" action="addpost.php" method="post" enctype="multipart/form-data">
                     <div class="box-body">
                       <div class="form-group">
                         <div class="col-sm-12">
@@ -471,8 +472,18 @@ if($result->num_rows > 0) {
                     <!-- /.box-body -->
                     <div class="box-footer">
                       <button type="submit" class="btn btn-info">Post</button>
-                      <button class="btn btn-warning pull-right margin-r-5">Image</button>
+                      <div class="pull-right margin-r-5">
+                        <label class="btn btn-warning">Image
+                          <input type="file" name="image" id="ProfileImageBtn">
+                        </label>
+                        
+                      </div>
                       <button class="btn btn-warning pull-right margin-r-5">Video</button>
+                      <div>
+                        <?php if(isset($_SESSION['uploadError'])) { ?>
+                          <p><?php echo $_SESSION['uploadError']; ?></p>
+                        <?php unset($_SESSION['uploadError']); } ?>
+                      </div>
                     </div>
                     <!-- /.box-footer -->
                   </form>
@@ -486,44 +497,117 @@ if($result->num_rows > 0) {
                 if($result->num_rows > 0) {
                   while($row =  $result->fetch_assoc()) {
                     ?>
-                      <!-- Post -->
-                      <div class="post">
-                        <div class="user-block">
-                        <?php
+                      <!-- Box Comment -->
+                      <div class="box box-widget">
+                        <div class="box-header with-border">
+                          <div class="user-block">
+                            <?php
                           if($row['profileimage'] != '') {
                             echo '<img src="uploads/profile/'.$row['profileimage'].'" class="img-circle img-bordered-sm" alt="User Image">';
                           } else {
                              echo '<img src="dist/img/avatar5.png" class="img-circle img-bordered-sm" alt="User Image">';
                           }
                         ?>
-                              <span class="username">
-                                <a href="#"><?php echo $row['name']; ?></a>
-                              </span>
-                          <span class="description">Shared publicly - <?php echo date('d-M-Y h:i a', strtotime($row['createdAt'])); ?></span>
+                            <span class="username"><a href="#"><?php echo $row['name']; ?></a></span>
+                            <span class="description">Shared publicly - <?php echo date('d-M-Y h:i a', strtotime($row['createdAt'])); ?></span>
+                          </div>
                         </div>
-                        <!-- /.user-block -->
-                        <p>
-                          <?php echo $row['description']; ?>
-                        </p>
-                        <ul class="list-inline">
-                          <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
-                          <li><a href="#" class="link-black text-sm"><i class="fa fa-thumbs-o-up margin-r-5"></i> Like</a>
-                          </li>
-                          <li class="pull-right">
-                            <a href="#" class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> Comments
-                              (5)</a></li>
-                        </ul>
+                        <div class="box-body">
+                        <?php
+                          if($row['image'] != "") {
+                            echo '<img class="img-responsive pad" src="uploads/post/'.$row['image'].'" alt="Photo">';
+                          }
+                        ?>
+                          
 
-                        <input class="form-control input-sm" type="text" placeholder="Type a comment">
+                          <p><?php echo $row['description']; ?></p>
+                          <button type="button" class="btn btn-default btn-xs"><i class="fa fa-share"></i> Share</button>
+                          <?php
+                          $sql1 = "SELECT * FROM likes WHERE id_user='$_SESSION[id_user]' AND id_post='$row[id_post]'";
+                          $result1 = $conn->query($sql1);
+
+                          if($result1->num_rows > 0) {
+                            ?>
+                            <button type="button" class="btn btn-default btn-xs" disabled><i class="fa fa-thumbs-o-up"></i> Like</button>
+
+                            <?php
+                          } else {
+                            ?>
+                               <button type="button" id="addLike" data-id="<?php echo $row['id_post']; ?>" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i> Like</button>
+                            <?php
+                          }
+                          ?>   
+                          <?php
+                          $sql2 = "SELECT * FROM likes WHERE id_post='$row[id_post]'";
+                          $result2 = $conn->query($sql2);
+                          $totalLikes = (int)$result2->num_rows; 
+                          ?>  
+                          <?php
+                          $sql3 = "SELECT * FROM comments WHERE id_post='$row[id_post]'";
+                          $result3 = $conn->query($sql3);
+                          $totalComments = (int)$result3->num_rows; 
+                          ?>                       
+                          <span class="pull-right text-muted"><?php echo $totalLikes; ?> likes - <?php echo $totalComments; ?> comments</span>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer box-comments">
+                        <?php
+                          $sql4 = "SELECT * FROM comments WHERE id_user='$_SESSION[id_user]' AND id_post='$row[id_post]'";
+                          $result4 = $conn->query($sql4);
+
+                          if($result4->num_rows > 0) {
+                            while($row4 = $result4->fetch_assoc()) {
+                              $sql5 = "SELECT * FROM users WHERE id_user='$row4[id_user]'";
+                              $result5 = $conn->query($sql5);
+                              if($result5->num_rows > 0) {
+                                $row5 = $result5->fetch_assoc();
+                              }
+                          ?>
+
+                          <div class="box-comment">
+                          <?php
+                              if($row5['profileimage'] != "") {
+                                echo '<img class="img-circle img-sm" src="uploads/profile/'.$row5['profileimage'].'" alt="Photo">';
+                              }
+                            ?>
+                            <div class="comment-text">
+                                  <span class="username">
+                                    <?php echo $row5['name']; ?>
+                                    <span class="text-muted pull-right"><?php echo date('d-M-Y h:i a', strtotime($row4['createdAt'])); ?></span>
+                                  </span>
+                              <?php echo $row4['comment']; ?>
+                            </div>
+                          </div>
+
+                          <?php
+                          }
+                        }
+                        ?>
+
+                        </div>
+                        <!-- /.box-footer -->
+                        <div class="box-footer">
+                          <form action="#" method="post">
+                          <?php
+                              if($row['profileimage'] != "") {
+                                echo '<img class="img-responsive img-circle img-sm" src="uploads/profile/'.$row['profileimage'].'" alt="Photo">';
+                              }
+                            ?>
+                            <!-- .img-push is used to add margin to elements next to floating images -->
+                            <div class="img-push">
+                              <input type="text" id="addcomment" data-id="<?php echo $row['id_post']; ?>" class="form-control input-sm" onkeypress="checkInput(event);" placeholder="Press enter to post comment">
+                            </div>
+                          </form>
+                        </div>
+                        <!-- /.box-footer -->
                       </div>
-                      <!-- /.post -->
+                      <!-- /.box -->
                     <?php
                   }
                 }
                 ?>
                 
-
-                <!-- Post -->
+<!--
                 <div class="post">
                   <div class="user-block">
                     <img class="img-circle img-bordered-sm" src="dist/img/user6-128x128.jpg" alt="User Image">
@@ -532,12 +616,10 @@ if($result->num_rows > 0) {
                         </span>
                     <span class="description">Posted 5 photos - 5 days ago</span>
                   </div>
-                  <!-- /.user-block -->
                   <div class="row margin-bottom">
                     <div class="col-sm-6">
                       <img class="img-responsive" src="dist/img/photo1.png" alt="Photo">
                     </div>
-                    <!-- /.col -->
                     <div class="col-sm-6">
                       <div class="row">
                         <div class="col-sm-6">
@@ -545,19 +627,14 @@ if($result->num_rows > 0) {
                           <br>
                           <img class="img-responsive" src="dist/img/photo3.jpg" alt="Photo">
                         </div>
-                        <!-- /.col -->
                         <div class="col-sm-6">
                           <img class="img-responsive" src="dist/img/photo4.jpg" alt="Photo">
                           <br>
                           <img class="img-responsive" src="dist/img/photo1.png" alt="Photo">
                         </div>
-                        <!-- /.col -->
                       </div>
-                      <!-- /.row -->
                     </div>
-                    <!-- /.col -->
                   </div>
-                  <!-- /.row -->
 
                   <ul class="list-inline">
                     <li><a href="#" class="link-black text-sm"><i class="fa fa-share margin-r-5"></i> Share</a></li>
@@ -570,7 +647,7 @@ if($result->num_rows > 0) {
 
                   <input class="form-control input-sm" type="text" placeholder="Type a comment">
                 </div>
-                <!-- /.post -->
+                 -->
               </div>
               <!-- /.tab-pane -->
               <div class="tab-pane" id="timeline">
@@ -787,5 +864,33 @@ if($result->num_rows > 0) {
 <script src="dist/js/pages/dashboard2.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
+
+<script>
+  $("#addLike").on("click", function() {
+    var id_post = $(this).attr("data-id");
+    $.post("addlike.php", {id:id_post}).done(function(data) {
+      var result = $.trim(data);
+      if(result == "ok") {
+        location.reload();
+      }
+    });
+  });
+</script>
+<script>
+  function checkInput(e) {
+
+    //13 means enter
+    if(e.keyCode === 13) {
+      var id_post = $("#addcomment").attr("data-id");
+      var comment = $("#addcomment").val();
+      $.post("addcomment.php", {id:id_post, comment:comment}).done(function(data) {
+        var result = $.trim(data);
+        if(result == "ok") {
+          location.reload();
+        }
+      });
+    }
+  }
+</script>
 </body>
 </html>

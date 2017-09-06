@@ -14,6 +14,8 @@ Social Network Using PHP - Part-4 - User Profile - https://youtu.be/d7tqV8cg0Qs
 
 Social Network Using PHP - Part-5 - Profile Image & Wall Post - https://youtu.be/Sn82Qity_88
 
+Social Network Using PHP - Part-6 - Wall Post Images, Likes & Comments - https://youtu.be/K3UmhUYS6FE
+
 # Theme
 
 Download Theme (Without PHP Code) From - http://learningfromscratch.online/download/social-network-theme/
