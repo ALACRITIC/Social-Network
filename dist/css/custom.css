@@ -11,3 +11,11 @@
 #ProfileImageBtn {
 	display: none;
 }
+
+.box-comments {
+	display: none;
+}
+
+.commentBtn {
+	cursor: pointer;
+}

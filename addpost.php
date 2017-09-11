@@ -37,13 +37,13 @@ if(isset($_POST)) {
 	}
 
 	if($uploadOk == false) {
-		header("Location: profile.php");
+		header("Location: " . $_SESSION['callFrom']);
 		exit();
 	}
 
 	$sql = " INSERT INTO post (id_user, description, image) VALUES ('$_SESSION[id_user]', '$description', '$file')";
 	if($conn->query($sql)===TRUE) {
-		header("Location: profile.php");
+		header("Location: "  . $_SESSION['callFrom']);
 		exit();
 	} else {
 		echo $conn->error;

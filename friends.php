@@ -1,3 +1,28 @@
+<?php
+
+session_start();
+
+if(empty($_SESSION['id_user'])) {
+  header("Location: login.php");
+  exit();
+}
+
+require_once("db.php");
+
+$name = "";
+
+$sql = "SELECT * FROM users WHERE id_user='$_SESSION[id_user]'";
+$result = $conn->query($sql);
+
+if($result->num_rows > 0) { 
+  while($row = $result->fetch_assoc()) {
+    $name = $row['name'];
+  }
+}
+
+$_SESSION['callFrom'] = "friends.php";
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -271,94 +296,26 @@
       <!-- Info boxes -->
       <div class="row">
         <div class="col-md-12">
-          <!-- Widget: user widget style 1 -->
-          <div class="box box-widget widget-user">
-            <!-- Add the bg color to the header using any of the bg-* classes -->
-            <div class="widget-user-header bg-aqua-active">
-              <h3 class="widget-user-username">Alexander Pierce</h3>
-              <h5 class="widget-user-desc">Founder &amp; CEO</h5>
-            </div>
-            <div class="widget-user-image">
-              <img class="img-circle" src="dist/img/user1-128x128.jpg" alt="User Avatar">
-            </div>
-            <div class="box-footer">
-              <div class="row">
-                <div class="col-sm-4 border-right">
-                  <div class="description-block">
-                    <button class="btn bg-purple bg-flat">Send Message</button>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-                <!-- /.col -->
-                <div class="col-sm-4 border-right">
-                  <div class="description-block">
-                    <button class="btn bg-maroon bg-flat">View Profile</button>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-                <!-- /.col -->
-                <div class="col-sm-4">
-                  <div class="description-block">
-                    <button class="btn bg-orange bg-flat">Remove Friend</button>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-                <!-- /.col -->
-              </div>
-              <!-- /.row -->
-            </div>
-          </div>
-          <!-- /.widget-user -->
 
-          <!-- Widget: user widget style 1 -->
-          <div class="box box-widget widget-user">
-            <!-- Add the bg color to the header using any of the bg-* classes -->
-            <div class="widget-user-header bg-aqua-active">
-              <h3 class="widget-user-username">Alexander Pierce</h3>
-              <h5 class="widget-user-desc">Founder &amp; CEO</h5>
-            </div>
-            <div class="widget-user-image">
-              <img class="img-circle" src="dist/img/user1-128x128.jpg" alt="User Avatar">
-            </div>
-            <div class="box-footer">
-              <div class="row">
-                <div class="col-sm-4 border-right">
-                  <div class="description-block">
-                    <button class="btn bg-purple bg-flat">Send Message</button>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-                <!-- /.col -->
-                <div class="col-sm-4 border-right">
-                  <div class="description-block">
-                    <button class="btn bg-maroon bg-flat">View Profile</button>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-                <!-- /.col -->
-                <div class="col-sm-4">
-                  <div class="description-block">
-                    <button class="btn bg-orange bg-flat">Remove Friend</button>
-                  </div>
-                  <!-- /.description-block -->
-                </div>
-                <!-- /.col -->
-              </div>
-              <!-- /.row -->
-            </div>
-          </div>
-          <!-- /.widget-user -->
+        <?php
+        $sql = "SELECT * FROM users WHERE id_user <> '$_SESSION[id_user]'"; // <>   != 
+          $result = $conn->query($sql);
 
-          <!-- Widget: user widget style 1 -->
+          if($result->num_rows > 0) { 
+            while($row = $result->fetch_assoc()) {
+                        
+        ?>
           <div class="box box-widget widget-user">
             <!-- Add the bg color to the header using any of the bg-* classes -->
             <div class="widget-user-header bg-aqua-active">
-              <h3 class="widget-user-username">Alexander Pierce</h3>
-              <h5 class="widget-user-desc">Founder &amp; CEO</h5>
+              <h3 class="widget-user-username"><?php echo $row['name']; ?></h3>
+              <h5 class="widget-user-desc"><?php echo $row['designation']; ?></h5>
             </div>
+            <?php if($row['profileimage'] != "") { ?>
             <div class="widget-user-image">
-              <img class="img-circle" src="dist/img/user1-128x128.jpg" alt="User Avatar">
+              <img class="img-circle" src="uploads/profile/<?php echo $row['profileimage']; ?>" alt="User Avatar">
             </div>
+            <?php } ?>
             <div class="box-footer">
               <div class="row">
                 <div class="col-sm-4 border-right">
@@ -376,9 +333,24 @@
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-4">
+                <?php
+                $sql1 = "SELECT * FROM friends WHERE id_user='$_SESSION[id_user]' AND id_frienduser='$row[id_user]'";
+                  $result1 = $conn->query($sql1);
+
+                  if($result1->num_rows > 0) { 
+                                
+                ?>
                   <div class="description-block">
                     <button class="btn bg-orange bg-flat">Remove Friend</button>
                   </div>
+                <?php 
+                  } else {
+                    ?>
+                    <div class="description-block">
+                    <button class="btn bg-green bg-flat">Add Friend</button>
+                  </div>
+
+                  <?php } ?>
                   <!-- /.description-block -->
                 </div>
                 <!-- /.col -->
@@ -386,7 +358,10 @@
               <!-- /.row -->
             </div>
           </div>
-          <!-- /.widget-user -->
+        <?php
+            }
+          }
+        ?>
           
         </div>
       </div>

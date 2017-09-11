@@ -7,6 +7,21 @@ if(empty($_SESSION['id_user'])) {
   exit();
 }
 
+require_once("db.php");
+
+$name = "";
+
+$sql = "SELECT * FROM users WHERE id_user='$_SESSION[id_user]'";
+$result = $conn->query($sql);
+
+if($result->num_rows > 0) { 
+  while($row = $result->fetch_assoc()) {
+    $name = $row['name'];
+  }
+}
+
+$_SESSION['callFrom'] = "index.php";
+
 ?>
 
 <!DOCTYPE html>
@@ -26,6 +41,8 @@ if(empty($_SESSION['id_user'])) {
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
+
+  <link rel="stylesheet" href="dist/css/custom.css">
 
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -183,8 +200,19 @@ if(empty($_SESSION['id_user'])) {
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-              <span class="hidden-xs">Alexander Pierce</span>
+              <?php 
+                $sql = "SELECT * FROM users WHERE id_user='$_SESSION[id_user]'";
+                $result = $conn->query($sql);
+                if($result->num_rows > 0) {
+                  $row = $result->fetch_assoc();
+                  if($row['profileimage'] != '') {
+                    echo '<img src="uploads/profile/'.$row['profileimage'].'" class="img-circle" alt="User Image" style="width: 25px; height: 25px;">';
+                  } else {
+                     echo '<img src="dist/img/avatar5.png" class="img-circle" alt="User Image" style="width: 25px; height: 25px;">';
+                  }
+                }
+                ?>
+              <span class="hidden-xs"><?php echo $name; ?></span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
@@ -192,8 +220,7 @@ if(empty($_SESSION['id_user'])) {
                 <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
 
                 <p>
-                  Alexander Pierce - Web Developer
-                  <small>Member since Nov. 2012</small>
+                  <?php echo $name; ?>
                 </p>
               </li>
               <!-- Menu Footer-->
@@ -219,10 +246,21 @@ if(empty($_SESSION['id_user'])) {
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+          <?php 
+                $sql = "SELECT * FROM users WHERE id_user='$_SESSION[id_user]'";
+                $result = $conn->query($sql);
+                if($result->num_rows > 0) {
+                  $row = $result->fetch_assoc();
+                  if($row['profileimage'] != '') {
+                    echo '<img src="uploads/profile/'.$row['profileimage'].'" class="img-circle" alt="User Image">';
+                  } else {
+                    echo '<img src="dist/img/avatar5.png" class="img-circle" alt="User Image">';
+                  }
+                }
+                ?>
         </div>
         <div class="pull-left info">
-          <p>Alexander Pierce</p>
+          <p><?php echo $name; ?></p>
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
@@ -287,178 +325,153 @@ if(empty($_SESSION['id_user'])) {
             </div>
             <!-- /.box-header -->
             <!-- form start -->
-            <form class="form-horizontal">
+            <form class="form-horizontal" action="addpost.php" method="post" enctype="multipart/form-data">
               <div class="box-body">
                 <div class="form-group">
                   <div class="col-sm-12">
-                   <textarea class="form-control" placeholder="What's on your mind?" name="message"></textarea>
+                   <textarea class="form-control" name="description" placeholder="What's on your mind?" name="message"></textarea>
                   </div>
                 </div>
               </div>
               <!-- /.box-body -->
               <div class="box-footer">
                 <button type="submit" class="btn btn-info">Post</button>
-                <button class="btn btn-warning pull-right margin-r-5">Text</button>
-                <button class="btn btn-warning pull-right margin-r-5">Image</button>
+                <div class="pull-right margin-r-5">
+                  <label class="btn btn-warning">Image
+                    <input type="file" name="image" id="ProfileImageBtn">
+                  </label>
+                  
+                </div>
                 <button class="btn btn-warning pull-right margin-r-5">Video</button>
+                <div>
+                  <?php if(isset($_SESSION['uploadError'])) { ?>
+                    <p><?php echo $_SESSION['uploadError']; ?></p>
+                  <?php unset($_SESSION['uploadError']); } ?>
+                </div>
               </div>
               <!-- /.box-footer -->
             </form>
           </div>
 
-            <!-- Box Comment -->
-          <div class="box box-widget">
-            <div class="box-header with-border">
-              <div class="user-block">
-                <img class="img-circle" src="dist/img/user1-128x128.jpg" alt="User Image">
-                <span class="username"><a href="#">Jonathan Burke Jr.</a></span>
-                <span class="description">Shared publicly - 7:30 PM Today</span>
-              </div>
-            </div>
-            <div class="box-body">
-              <img class="img-responsive pad" src="dist/img/photo2.png" alt="Photo">
+          <?php
 
-              <p>I took this photo this morning. What do you guys think?</p>
-              <button type="button" class="btn btn-default btn-xs"><i class="fa fa-share"></i> Share</button>
-              <button type="button" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i> Like</button>
-              <span class="pull-right text-muted">127 likes - 3 comments</span>
-            </div>
-            <!-- /.box-body -->
-            <div class="box-footer box-comments">
-              <div class="box-comment">
-                <!-- User image -->
-                <img class="img-circle img-sm" src="dist/img/user3-128x128.jpg" alt="User Image">
+                $sql = "SELECT * FROM post INNER JOIN users WHERE post.id_user=users.id_user AND post.id_user='$_SESSION[id_user]' ORDER BY post.id_post DESC";
+                $result = $conn->query($sql);
 
-                <div class="comment-text">
-                      <span class="username">
-                        Maria Gonzales
-                        <span class="text-muted pull-right">8:03 PM Today</span>
-                      </span><!-- /.username -->
-                  It is a long established fact that a reader will be distracted
-                  by the readable content of a page when looking at its layout.
-                </div>
-                <!-- /.comment-text -->
-              </div>
-              <!-- /.box-comment -->
-              <div class="box-comment">
-                <!-- User image -->
-                <img class="img-circle img-sm" src="dist/img/user4-128x128.jpg" alt="User Image">
+                if($result->num_rows > 0) {
+                  $i = 0;
+                  while($row =  $result->fetch_assoc()) {
+                    $i++;
+                    ?>
+                      <!-- Box Comment -->
+                      <div class="box box-widget">
+                        <div class="box-header with-border">
+                          <div class="user-block">
+                            <?php
+                          if($row['profileimage'] != '') {
+                            echo '<img src="uploads/profile/'.$row['profileimage'].'" class="img-circle img-bordered-sm" alt="User Image">';
+                          } else {
+                             echo '<img src="dist/img/avatar5.png" class="img-circle img-bordered-sm" alt="User Image">';
+                          }
+                        ?>
+                            <span class="username"><a href="#"><?php echo $row['name']; ?></a></span>
+                            <span class="description">Shared publicly - <?php echo date('d-M-Y h:i a', strtotime($row['createdAt'])); ?></span>
+                          </div>
+                        </div>
+                        <div class="box-body">
+                        <?php
+                          if($row['image'] != "") {
+                            echo '<img class="img-responsive pad" src="uploads/post/'.$row['image'].'" alt="Photo">';
+                          }
+                        ?>
+                          
 
-                <div class="comment-text">
-                      <span class="username">
-                        Luna Stark
-                        <span class="text-muted pull-right">8:03 PM Today</span>
-                      </span><!-- /.username -->
-                  It is a long established fact that a reader will be distracted
-                  by the readable content of a page when looking at its layout.
-                </div>
-                <!-- /.comment-text -->
-              </div>
-              <!-- /.box-comment -->
-            </div>
-            <!-- /.box-footer -->
-            <div class="box-footer">
-              <form action="#" method="post">
-                <img class="img-responsive img-circle img-sm" src="dist/img/user4-128x128.jpg" alt="Alt Text">
-                <!-- .img-push is used to add margin to elements next to floating images -->
-                <div class="img-push">
-                  <input type="text" class="form-control input-sm" placeholder="Press enter to post comment">
-                </div>
-              </form>
-            </div>
-            <!-- /.box-footer -->
-          </div>
-          <!-- /.box -->
+                          <p><?php echo $row['description']; ?></p>
+                          <button type="button" class="btn btn-default btn-xs"><i class="fa fa-share"></i> Share</button>
+                          <?php
+                          $sql1 = "SELECT * FROM likes WHERE id_user='$_SESSION[id_user]' AND id_post='$row[id_post]'";
+                          $result1 = $conn->query($sql1);
 
-          <div class="box box-widget">
-            <div class="box-header with-border">
-              <div class="user-block">
-                <img class="img-circle" src="dist/img/user1-128x128.jpg" alt="User Image">
-                <span class="username"><a href="#">Jonathan Burke Jr.</a></span>
-                <span class="description">Shared publicly - 7:30 PM Today</span>
-              </div>
-            </div>
-            <div class="box-body">
-              <!-- post text -->
-              <p>Far far away, behind the word mountains, far from the
-                countries Vokalia and Consonantia, there live the blind
-                texts. Separated they live in Bookmarksgrove right at</p>
+                          if($result1->num_rows > 0) {
+                            ?>
+                            <button type="button" class="btn btn-default btn-xs" disabled><i class="fa fa-thumbs-o-up"></i> Like</button>
 
-              <p>the coast of the Semantics, a large language ocean.
-                A small river named Duden flows by their place and supplies
-                it with the necessary regelialia. It is a paradisematic
-                country, in which roasted parts of sentences fly into
-                your mouth.</p>
+                            <?php
+                          } else {
+                            ?>
+                               <button type="button" id="addLike" data-id="<?php echo $row['id_post']; ?>" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i> Like</button>
+                            <?php
+                          }
+                          ?>   
+                          <?php
+                          $sql2 = "SELECT * FROM likes WHERE id_post='$row[id_post]'";
+                          $result2 = $conn->query($sql2);
+                          $totalLikes = (int)$result2->num_rows; 
+                          ?>  
+                          <?php
+                          $sql3 = "SELECT * FROM comments WHERE id_post='$row[id_post]'";
+                          $result3 = $conn->query($sql3);
+                          $totalComments = (int)$result3->num_rows; 
+                          ?>                       
+                          <span class="pull-right text-muted commentBtn" onclick="toggleComments(<?php echo $i; ?>);"><?php echo $totalLikes; ?> likes - <?php echo $totalComments; ?> comments</span>
+                        </div>
+                        <!-- /.box-body -->
+                        <div id="boxComment<?php echo $i; ?>" class="box-footer box-comments">
+                        <?php
+                          $sql4 = "SELECT * FROM comments WHERE id_user='$_SESSION[id_user]' AND id_post='$row[id_post]'";
+                          $result4 = $conn->query($sql4);
 
-              <!-- Attachment -->
-              <div class="attachment-block clearfix">
-                <img class="attachment-img" src="dist/img/photo1.png" alt="Attachment Image">
+                          if($result4->num_rows > 0) {
+                            while($row4 = $result4->fetch_assoc()) {
+                              $sql5 = "SELECT * FROM users WHERE id_user='$row4[id_user]'";
+                              $result5 = $conn->query($sql5);
+                              if($result5->num_rows > 0) {
+                                $row5 = $result5->fetch_assoc();
+                              }
+                          ?>
 
-                <div class="attachment-pushed">
-                  <h4 class="attachment-heading"><a href="http://www.lipsum.com/">Lorem ipsum text generator</a></h4>
+                          <div class="box-comment">
+                          <?php
+                              if($row5['profileimage'] != "") {
+                                echo '<img class="img-circle img-sm" src="uploads/profile/'.$row5['profileimage'].'" alt="Photo">';
+                              }
+                            ?>
+                            <div class="comment-text">
+                                  <span class="username">
+                                    <?php echo $row5['name']; ?>
+                                    <span class="text-muted pull-right"><?php echo date('d-M-Y h:i a', strtotime($row4['createdAt'])); ?></span>
+                                  </span>
+                              <?php echo $row4['comment']; ?>
+                            </div>
+                          </div>
 
-                  <div class="attachment-text">
-                    Description about the attachment can be placed here.
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry... <a href="#">more</a>
-                  </div>
-                  <!-- /.attachment-text -->
-                </div>
-                <!-- /.attachment-pushed -->
-              </div>
-              <!-- /.attachment-block -->
+                          <?php
+                          }
+                        }
+                        ?>
 
-              <!-- Social sharing buttons -->
-              <button type="button" class="btn btn-default btn-xs"><i class="fa fa-share"></i> Share</button>
-              <button type="button" class="btn btn-default btn-xs"><i class="fa fa-thumbs-o-up"></i> Like</button>
-              <span class="pull-right text-muted">45 likes - 2 comments</span>
-            </div>
-            <!-- /.box-body -->
-            <div class="box-footer box-comments">
-              <div class="box-comment">
-                <!-- User image -->
-                <img class="img-circle img-sm" src="dist/img/user3-128x128.jpg" alt="User Image">
-
-                <div class="comment-text">
-                      <span class="username">
-                        Maria Gonzales
-                        <span class="text-muted pull-right">8:03 PM Today</span>
-                      </span><!-- /.username -->
-                  It is a long established fact that a reader will be distracted
-                  by the readable content of a page when looking at its layout.
-                </div>
-                <!-- /.comment-text -->
-              </div>
-              <!-- /.box-comment -->
-              <div class="box-comment">
-                <!-- User image -->
-                <img class="img-circle img-sm" src="dist/img/user5-128x128.jpg" alt="User Image">
-
-                <div class="comment-text">
-                      <span class="username">
-                        Nora Havisham
-                        <span class="text-muted pull-right">8:03 PM Today</span>
-                      </span><!-- /.username -->
-                  The point of using Lorem Ipsum is that it has a more-or-less
-                  normal distribution of letters, as opposed to using
-                  'Content here, content here', making it look like readable English.
-                </div>
-                <!-- /.comment-text -->
-              </div>
-              <!-- /.box-comment -->
-            </div>
-            <!-- /.box-footer -->
-            <div class="box-footer">
-              <form action="#" method="post">
-                <img class="img-responsive img-circle img-sm" src="dist/img/user4-128x128.jpg" alt="Alt Text">
-                <!-- .img-push is used to add margin to elements next to floating images -->
-                <div class="img-push">
-                  <input type="text" class="form-control input-sm" placeholder="Press enter to post comment">
-                </div>
-              </form>
-            </div>
-            <!-- /.box-footer -->
-          </div>
-
+                        </div>
+                        <!-- /.box-footer -->
+                        <div class="box-footer">
+                          <form action="#" method="post">
+                          <?php
+                              if($row['profileimage'] != "") {
+                                echo '<img class="img-responsive img-circle img-sm" src="uploads/profile/'.$row['profileimage'].'" alt="Photo">';
+                              }
+                            ?>
+                            <!-- .img-push is used to add margin to elements next to floating images -->
+                            <div class="img-push">
+                              <input type="text" id="addcomment" data-id="<?php echo $row['id_post']; ?>" class="form-control input-sm" onkeypress="checkInput(event);" placeholder="Press enter to post comment">
+                            </div>
+                          </form>
+                        </div>
+                        <!-- /.box-footer -->
+                      </div>
+                      <!-- /.box -->
+                    <?php
+                  }
+                }
+                ?>
         </div>
 
         <div class="col-md-4">
@@ -629,5 +642,39 @@ if(empty($_SESSION['id_user'])) {
 <script src="dist/js/pages/dashboard2.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
+
+<script>
+  $("#addLike").on("click", function() {
+    var id_post = $(this).attr("data-id");
+    $.post("addlike.php", {id:id_post}).done(function(data) {
+      var result = $.trim(data);
+      if(result == "ok") {
+        location.reload();
+      }
+    });
+  });
+</script>
+<script>
+  function checkInput(e) {
+
+    //13 means enter
+    if(e.keyCode === 13) {
+      var id_post = $("#addcomment").attr("data-id");
+      var comment = $("#addcomment").val();
+      $.post("addcomment.php", {id:id_post, comment:comment}).done(function(data) {
+        var result = $.trim(data);
+        if(result == "ok") {
+          location.reload();
+        }
+      });
+    }
+  }
+</script>
+
+<script>
+  function toggleComments(id) {
+    $("#boxComment"+id).slideToggle("slow");
+  }
+</script>
 </body>
 </html>

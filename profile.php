@@ -27,6 +27,8 @@ if($result->num_rows > 0) {
   }
 }
 
+$_SESSION['callFrom'] = "profile.php";
+
 ?>
 
 <!DOCTYPE html>
